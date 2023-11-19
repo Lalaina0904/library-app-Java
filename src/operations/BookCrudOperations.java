@@ -1,7 +1,9 @@
 package operations;
 
+import entity.Author;
 import entity.Book;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -9,59 +11,68 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookCrudOperations implements CrudOperations<Book>  {
-    static Connection_DB connectionDB = new Connection_DB("prog_admin", System.getenv("password"), "library_management");
-
-    Statement statement;
-    {
-        try {
-            statement = connectionDB.getConnection().createStatement();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void resultSet(String sql) throws SQLException {
-        ResultSet resultSet = statement.executeQuery(sql);
-
-        while (resultSet.next()) {
-            System.out.println("ID: " + resultSet.getInt("id"));
-            System.out.println("BookName: " + resultSet.getString("bookName"));
-            System.out.println("PageNumber: " + resultSet.getString("pageNumbers"));
-            System.out.println("Topic: " + resultSet.getString("topic"));
-            System.out.println("ReleaseDate: " + resultSet.getString("releaseDate"));
-            System.out.println("Author: " + resultSet.getInt("author"));
-        }
-    }
     @Override
     public List<Book> findAll() {
         List<Book> books = new ArrayList<>();
         try {
             String sql = "SELECT * FROM book";
-            statement.execute(sql);
-            resultSet(sql);
+            PreparedStatement preparedStatement = Connection_DB.getInstance().ConnectToDatabase().prepareStatement(sql);
+            ResultSet resultSet=preparedStatement.executeQuery();
+
+            while(resultSet.next()){
+
+                books.add(
+                        new Book(
+                                resultSet.getInt("id"),
+                                resultSet.getString("bookname"),
+                                resultSet.getInt("pagenumbers"),
+                                resultSet.getString("topic"),
+                                resultSet.getString("releasedate"),
+                                resultSet.getInt("authorid")
+                        )
+                );
+            }
         }catch (SQLException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     return books;
     }
 
     @Override
     public List<Book> saveAll(List<Book> entity) {
-        List<Book> savedBooks = new ArrayList<>();
         try {
-            String sql = "INSERT INTO book (id, bookName, pageNumbers, topic, releaseDate, author) VALUES (?,?,?,?,?,?)";
-            statement.execute(sql);
+            String sql = "INSERT INTO book (id, bookName, pageNumbers, topic, releaseDate, authorid) VALUES (?,?,?,?,?,?)";
+            PreparedStatement preparedStatement = Connection_DB.getInstance().ConnectToDatabase().prepareStatement(sql);
+
+            for (Book book : entity){
+                preparedStatement.setInt(1, book.getBookId());
+                preparedStatement.setString(2, book.getBookName());
+                preparedStatement.setInt(3, book.getPageNumbers());
+                preparedStatement.setString(4, book.getTopic());
+                preparedStatement.setString(5, book.getReleaseDate());
+                preparedStatement.setInt(6, book.getAuthor());
+                preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch();
         }catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return savedBooks;
+        return entity;
     }
 
     @Override
     public Book save(Book entity) {
         try {
             String sql = "INSERT INTO book (id, bookName, pageNumbers, releaseDate, topic, author) VALUES (?, ?, ?, ?, ?, ?)";
-            statement.execute(sql);
+            PreparedStatement preparedStatement = Connection_DB.getInstance().ConnectToDatabase().prepareStatement(sql);
+
+            preparedStatement.setInt(1, entity.getBookId());
+            preparedStatement.setString(2, entity.getBookName());
+            preparedStatement.setInt(3, entity.getPageNumbers());
+            preparedStatement.setString(4, entity.getTopic());
+            preparedStatement.setString(5, entity.getReleaseDate());
+            preparedStatement.setInt(6, entity.getAuthor());
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -71,10 +82,12 @@ public class BookCrudOperations implements CrudOperations<Book>  {
     @Override
     public void delete(int id) {
         try {
-            String sql = "DELETE FROM book WHERE id = " + id;
-            statement.execute(sql);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            String sql = "DELETE FROM book WHERE id = ?";
+            PreparedStatement preparedStatement = Connection_DB.getInstance().ConnectToDatabase().prepareStatement(sql);
+            preparedStatement.setInt(1,id);
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

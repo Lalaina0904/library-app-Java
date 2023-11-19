@@ -8,22 +8,19 @@ public class Connection_DB {
     private String password;
     private String databaseName;
     private Connection connection;
+    private static Connection_DB connection_DB;
 
-    public Connection_DB(String username, String password, String databaseName) {
-        this.username = username;
-        this.password = password;
-        this.databaseName = databaseName;
-        this.createConnection();
+    private Connection_DB() {
+       username="prog_admin";
+       password = System.getenv("password");
+       databaseName = "library_management";
+       createStatement();
+
     }
 
-    private void createConnection() {
+    private void createStatement() {
         try {
-            this.connection = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost/" + this.databaseName,
-                    this.username,
-                    this.password
-            );
-
+            this.connection = DriverManager.getConnection("jdbc:postgresql://localhost/" + this.databaseName,this.username, this.password );
             //afficher un message si la connexion est réussie
             System.out.println("----- Connexion réussie ! ------");
         } catch (SQLException e) {
@@ -31,8 +28,14 @@ public class Connection_DB {
             System.out.println("----- Erreur de connexion ! ------");
         }
     }
+    public static Connection_DB getInstance() {
+        if(connection_DB == null){
+            connection_DB = new Connection_DB();
+        }
+        return connection_DB;
+    }
 
-    public Connection getConnection() {
+    public Connection ConnectToDatabase(){
         return connection;
     }
 }

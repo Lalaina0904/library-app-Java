@@ -4,11 +4,11 @@ public abstract class CrupdateBook {
 
     int id;
     String bookName;
-    String pageNumbers;
+    int pageNumbers;
     String topic;
     String releaseDate;
 
-    public CrupdateBook(int id, String bookName, String pageNumbers, String topic, String releaseDate) {
+    public CrupdateBook(int id, String bookName, int pageNumbers, String topic, String releaseDate) {
         this.id = id;
         this.bookName = bookName;
         this.pageNumbers = pageNumbers;
@@ -16,11 +16,11 @@ public abstract class CrupdateBook {
         this.releaseDate = releaseDate;
     }
 
-    public int getId() {
+    public int getBookId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setBookId(int id) {
         this.id = id;
     }
 
@@ -32,11 +32,11 @@ public abstract class CrupdateBook {
         this.bookName = bookName;
     }
 
-    public String getPageNumbers() {
+    public int getPageNumbers() {
         return pageNumbers;
     }
 
-    public void setPageNumbers(String pageNumbers) {
+    public void setPageNumbers(int pageNumbers) {
         this.pageNumbers = pageNumbers;
     }
 

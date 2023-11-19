@@ -1,9 +1,29 @@
 package entity;
 
 public class Book extends  CrupdateBook {
-    Author author;
-    public Book(int id, String bookName, String pageNumbers, String topic, String releaseDate, Author author) {
+    int author;
+    public Book(int id, String bookName, int pageNumbers, String topic, String releaseDate, int author) {
         super(id, bookName, pageNumbers, topic, releaseDate);
         this.author = author;
+    }
+
+    public int getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(int author) {
+        this.author = author;
+    }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "author=" + author +
+                ", id=" + id +
+                ", bookName='" + bookName + '\'' +
+                ", pageNumbers=" + pageNumbers +
+                ", topic='" + topic + '\'' +
+                ", releaseDate='" + releaseDate + '\'' +
+                '}';
     }
 }
