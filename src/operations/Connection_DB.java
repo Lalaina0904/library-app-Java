@@ -11,11 +11,10 @@ public class Connection_DB {
     private static Connection_DB connection_DB;
 
     private Connection_DB() {
-       username="prog_admin";
-       password = System.getenv("password");
-       databaseName = "library_management";
-       createStatement();
-
+        username="prog_admin";
+        password = System.getenv("password");
+        databaseName = "library_management";
+        createStatement();
     }
 
     private void createStatement() {
