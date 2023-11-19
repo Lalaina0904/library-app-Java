@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookCrudOperations implements CrudOperations<Book>  {
-    static Connection_DB connectionDB = new Connection_DB("prog_admin", "123456", "library_management");
+    static Connection_DB connectionDB = new Connection_DB("prog_admin", System.getenv("password"), "library_management");
 
     Statement statement;
     {
@@ -36,10 +36,7 @@ public class BookCrudOperations implements CrudOperations<Book>  {
     public List<Book> findAll() {
         List<Book> books = new ArrayList<>();
         try {
-            String sql = "SELECT book.*,\n" +
-                    "author.id AS author_id\n" +
-                    "FROM book\n" +
-                    "INNER JOIN author ON book.author = author.id\n" ;
+            String sql = "SELECT * FROM book";
             statement.execute(sql);
             resultSet(sql);
         }catch (SQLException e) {

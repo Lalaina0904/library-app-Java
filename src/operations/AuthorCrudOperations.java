@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AuthorCrudOperations implements CrudOperations<Author>  {
-    static Connection_DB connectionDB = new Connection_DB("prog_admin", System.getenv("MotDePasseProgAdmin"), "library_management");
+    static Connection_DB connectionDB = new Connection_DB("prog_admin", System.getenv("password"), "library_management");
 
     Statement statement;
     {
