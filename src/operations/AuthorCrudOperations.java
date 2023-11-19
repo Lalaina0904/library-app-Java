@@ -1,81 +1,85 @@
-//package operations;
-//
-//import entity.Author;
-//import entity.Book;
-//
-//import java.sql.ResultSet;
-//import java.sql.SQLException;
-//import java.sql.Statement;
-//import java.util.ArrayList;
-//import java.util.List;
-//
-//public class AuthorCrudOperations implements CrudOperations<Author>  {
-//    static Connection_DB connectionDB = new Connection_DB("prog_admin", System.getenv("password"), "library_management");
-//
-//    Statement statement;
-//    {
-//        try {
-//            statement = connectionDB.getConnection().createStatement();
-//        } catch (SQLException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    private void resultSet(String sql) throws SQLException {
-//        ResultSet resultSet = statement.executeQuery(sql);
-//
-//        while (resultSet.next()) {
-//            System.out.println("ID: " + resultSet.getInt("id"));
-//            System.out.println("BookName: " + resultSet.getString("bookName"));
-//            System.out.println("PageNumber: " + resultSet.getString("pageNumbers"));
-//            System.out.println("Topic: " + resultSet.getString("topic"));
-//            System.out.println("ReleaseDate: " + resultSet.getString("releaseDate"));
-//            System.out.println("Author: " + resultSet.getInt("author"));
-//        }
-//    }
-//    @Override
-//    public List<Author> findAll() {
-//        List<Author> Authors = new ArrayList<>();
-//        try {
-//            String sql = "SELECT * FROM author";
-//            statement.execute(sql);
-//            resultSet(sql);
-//        }catch (SQLException e) {
-//            System.out.println(e.getMessage());
-//        }
-//        return Authors;
-//    }
-//
-//    @Override
-//    public List<Author> saveAll(List<Author> entity) {
-//        List<Author> savedAuthors = new ArrayList<>();
-//        try{
-//            String sql = "insert into author (id, name, sex) values (?,?,?)";
-//            statement.execute(sql);
-//        } catch (SQLException e) {
-//            throw new RuntimeException(e);
-//        }
-//        return savedAuthors;
-//    }
-//
-//    @Override
-//    public Author save(Author entity) {
-//        try{
-//            String sql = "INSERT INTO author (id, name, sex) VALUES (?, ?, ?)";
-//            statement.execute(sql);
-//        }catch (SQLException e) {
-//            throw new RuntimeException(e);
-//        }
-//        return entity;
-//    }
-//
-//    @Override
-//    public void delete(int id) {
-//        try {
-//            String sql = "DELETE FROM author WHERE id = " + id;
-//            statement.execute(sql);
-//        } catch(SQLException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//}
+package operations;
+
+import entity.Author;
+import entity.Book;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+public class AuthorCrudOperations implements CrudOperations<Author>  {
+    @Override
+    public List<Author> findAll() {
+        List<Author> authors = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM book";
+            PreparedStatement preparedStatement = Connection_DB.getInstance().ConnectToDatabase().prepareStatement(sql);
+            ResultSet resultSet=preparedStatement.executeQuery();
+
+            while(resultSet.next()){
+
+                authors.add(
+                        new Author(
+                                resultSet.getInt("id"),
+                                resultSet.getString("name"),
+                                resultSet.getString("sex")
+                        )
+                );
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return authors;
+    }
+
+    @Override
+    public List<Author> saveAll(List<Author> entity) {
+        try {
+            String sql = "INSERT INTO book (id, name, sex) VALUES (?,?,?)";
+            PreparedStatement preparedStatement = Connection_DB.getInstance().ConnectToDatabase().prepareStatement(sql);
+
+            for (Author author : entity){
+                preparedStatement.setInt(1, author.getId());
+                preparedStatement.setString(2, author.getName());
+                preparedStatement.setString(3, author.getSex());
+                preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch();
+        }catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return entity;
+    }
+
+
+    @Override
+    public Author save(Author entity) {
+        try {
+            String sql = "INSERT INTO author (id, name, sex) VALUES (?, ?, ?)";
+            PreparedStatement preparedStatement = Connection_DB.getInstance().ConnectToDatabase().prepareStatement(sql);
+
+            preparedStatement.setInt(1, entity.getId());
+            preparedStatement.setString(2, entity.getName());
+            preparedStatement.setString(3, entity.getSex());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return entity;
+    }
+
+    @Override
+    public void delete(int id) {
+        try {
+            String sql = "DELETE FROM author WHERE id = ?";
+            PreparedStatement preparedStatement = Connection_DB.getInstance().ConnectToDatabase().prepareStatement(sql);
+            preparedStatement.setInt(1,id);
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
