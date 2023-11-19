@@ -8,7 +8,7 @@ public abstract class User {
     public User(int id, String name, String sex) {
         this.id = id;
         this.name = name;
-        this.sex = name;
+        this.sex = sex;
     }
 
     public int getId() {

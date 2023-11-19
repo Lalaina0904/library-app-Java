@@ -6,7 +6,6 @@ import entity.Book;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +14,7 @@ public class AuthorCrudOperations implements CrudOperations<Author>  {
     public List<Author> findAll() {
         List<Author> authors = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM book";
+            String sql = "SELECT * FROM author";
             PreparedStatement preparedStatement = Connection_DB.getInstance().ConnectToDatabase().prepareStatement(sql);
             ResultSet resultSet=preparedStatement.executeQuery();
 
@@ -38,7 +37,7 @@ public class AuthorCrudOperations implements CrudOperations<Author>  {
     @Override
     public List<Author> saveAll(List<Author> entity) {
         try {
-            String sql = "INSERT INTO book (id, name, sex) VALUES (?,?,?)";
+            String sql = "INSERT INTO author (id, name, sex) VALUES (?,?,?)";
             PreparedStatement preparedStatement = Connection_DB.getInstance().ConnectToDatabase().prepareStatement(sql);
 
             for (Author author : entity){
